@@ -6,7 +6,7 @@ public interface IUserRepository
 
     IReadOnlyCollection<UserDTO> ReadAll();
 
-    UserDTO Read(int userId);
+    UserDTO Find(int userId);
 
     Response Update(UserUpdateDTO user);
 
