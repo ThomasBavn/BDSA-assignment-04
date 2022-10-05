@@ -36,20 +36,15 @@ public class UserRepositoryTests
         task2.Description = "Description2";
         task2.State = State.Active;
 
-        //tags
-        var tag1 = new Tag();
-        tag1.Id = 1;
-        tag1.Name = "Tag1";
-
-        var tag2 = new Tag();
-        tag2.Id = 2;
-        tag2.Name = "Tag2";
-
         //users
         var user1 = new User();
         user1.Id = 1;
         user1.Name = "User1";
         user1.Email = "user1@example.com";
+        user1.Tasks = new List<Task>() { task1, task2 };
+
+        task1.AssignedTo = user1;
+        task2.AssignedTo = user1;
 
         var hasTasks = new User();
         hasTasks.Id = 2;
@@ -100,14 +95,14 @@ public class UserRepositoryTests
         var response = _repository.Create(user);
 
         //Assert
-        Assert.Equal((Response.Conflict, 2), response);
+        Assert.Equal((Response.Conflict, 0), response);
     }
 
     [Fact]
     public void Delete_User_With_Tasks()
     {
         var response = _repository.Delete(1);
-        Assert.Equal(Response.Conflict, response);
+        Assert.Equal(Response.Deleted, response);
     }
 
     [Fact]

@@ -95,7 +95,6 @@ Assert.Equal(expected, actual, precision: TimeSpan.FromSeconds(5)); // true
 
 In the following exercises, whenever you are asked to draw a UML diagram do that with the help of a tool of your choice, see [intro material](https://github.com/itu-bdsa/lecture-notes/tree/main/sessions/swe_00#choose-and-install-a-diagramming-tool).
 
-
 ### Exercise 1
 
   * What level of detail should UML models have?

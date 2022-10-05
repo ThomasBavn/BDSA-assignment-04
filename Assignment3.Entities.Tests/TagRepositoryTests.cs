@@ -34,7 +34,7 @@ public class TagRepositoryTests : IDisposable
         var r1 = tagRepo.Create(new TagCreateDTO("cool tag"));
         var r2 = tagRepo.Create(new TagCreateDTO("cool tag"));
         var r3 = tagRepo.Create(new TagCreateDTO(
-            "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkz"));
+            "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"));
         var r4 = tagRepo.Create(new TagCreateDTO("bad tag"));
 
         r1.ToTuple()

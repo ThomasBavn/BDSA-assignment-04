@@ -22,13 +22,13 @@ public class TaskRepository : ITaskRepository
             return (Response.BadRequest, 0);
         }
 
-        var taskEntity = new Task();
-        taskEntity.Title = task.Title;
-        taskEntity.Description = task.Description!;
-        taskEntity.State = State.New;
+        var newTask = new Task();
+        newTask.Title = task.Title;
+        newTask.Description = task.Description!;
+        newTask.State = State.New;
         var tagEntities = _context.Tags.Where(tE => task.Tags.Any(tS => tE.Name == tS))
             .ToList();
-        taskEntity.Tags = tagEntities;
+        newTask.Tags = tagEntities;
         // assignment gave choice of implementing either user or tag, and since we implemented tag, we can't follow requirement 7 for task
         // however, this is how the code would look if we had implemented user instead
         /*
@@ -48,13 +48,13 @@ public class TaskRepository : ITaskRepository
         taskEntity.Created = currentTime;
         taskEntity.StateUpdated = currentTime;*/
 
-        var _ = _context.Tasks.Add(taskEntity);
+        _context.Tasks.Add(newTask);
 
         try
         {
             _context.SaveChanges();
 
-            return (Response.Created, taskEntity.Id);
+            return (Response.Created, newTask.Id);
         }
         catch (DbUpdateException e)
         {
@@ -70,47 +70,43 @@ public class TaskRepository : ITaskRepository
         // maybe there's a better way then .Where(...) to get every item
         return _context.Tasks.Include(t => t.Tags)
             .Where(p => p.Id != 0)
-            .Select(p => new TaskDTO(p.Id, p.Title, "John Doe", p.Tags.Select(t => t.Name)
+            .Select(p => new TaskDTO(p.Id, p.Title, p.AssignedTo!.Name, p.Tags.Select(t => t.Name)
                 .ToImmutableList(), p.State))
             .ToImmutableList();
     }
 
     public IReadOnlyCollection<TaskDTO> ReadAllRemoved()
     {
-        //"John Doe" would instead be p.AssignedTo.Name
         return _context.Tasks.Include(t => t.Tags)
             .Where(p => p.State == State.Removed)
-            .Select(p => new TaskDTO(p.Id, p.Title, "John Doe", p.Tags.Select(t => t.Name)
+            .Select(p => new TaskDTO(p.Id, p.Title, p.AssignedTo!.Name, p.Tags.Select(t => t.Name)
                 .ToImmutableList(), p.State))
             .ToImmutableList();
     }
 
     public IReadOnlyCollection<TaskDTO> ReadAllByTag(string tag)
     {
-        //"John Doe" would instead be p.AssignedTo.Name
         return _context.Tags.Include(t => t.Tasks)
             .First(t => t.Name == tag)
-            .Tasks.Select(p => new TaskDTO(p.Id, p.Title, "John Doe", p.Tags.Select(t => t.Name)
+            .Tasks.Select(p => new TaskDTO(p.Id, p.Title, p.AssignedTo!.Name, p.Tags.Select(t => t.Name)
                 .ToImmutableList(), p.State))
             .ToImmutableList();
     }
 
     public IReadOnlyCollection<TaskDTO> ReadAllByUser(int userId)
     {
-        //"John Doe" would instead be p.AssignedTo.Name
         return _context.Users.Include(t => t.Tasks)
             .First(u => u.Id == userId)
-            .Tasks.Select(p => new TaskDTO(p.Id, p.Title, "John Doe", p.Tags.Select(t => t.Name)
+            .Tasks.Select(p => new TaskDTO(p.Id, p.Title, p.AssignedTo!.Name, p.Tags.Select(t => t.Name)
                 .ToImmutableList(), p.State))
             .ToImmutableList();
     }
 
     public IReadOnlyCollection<TaskDTO> ReadAllByState(State state)
     {
-        //"John Doe" would instead be p.AssignedTo.Name
         return _context.Tasks.Include(t => t.Tags)
             .Where(p => p.State == state)
-            .Select(p => new TaskDTO(p.Id, p.Title, "John Doe", p.Tags.Select(t => t.Name)
+            .Select(p => new TaskDTO(p.Id, p.Title, p.AssignedTo!.Name, p.Tags.Select(t => t.Name)
                 .ToImmutableList(), p.State))
             .ToImmutableList();
     }
@@ -120,12 +116,11 @@ public class TaskRepository : ITaskRepository
         // these fields dont exist per definition of Task in assignment, so we initialize them to current time
         var dummy = DateTime.UtcNow;
 
-        //"John Doe" would instead be p.AssignedTo.Name
         return _context.Tasks.Include(p => p.Tags)
             .Where(t => t.Id == taskId)
-            .Select(t => new TaskDetailsDTO(t.Id, t.Title, t.Description, dummy, "John Doe", t.Tags.Select(t => t.Name)
+            .Select(t => new TaskDetailsDTO(t.Id, t.Title, t.Description, dummy, t.AssignedTo!.Name, t.Tags.Select(t => t.Name)
                 .ToImmutableList(), t.State, dummy))
-            .FirstOrDefault();
+            .First();
     }
 
     public Response Update(TaskUpdateDTO task)

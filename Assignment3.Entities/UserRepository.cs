@@ -11,7 +11,7 @@ public class UserRepository : IUserRepository
 
     public (Response Response, int UserId) Create(UserCreateDTO user)
     {
-        if (context.Users.Where(u => u.Email.Equals(user.Email)).Any()) return (Response.Conflict, -1);
+        if (context.Users.Where(u => u.Email.Equals(user.Email)).Any()) return (Response.Conflict, 0);
         context.Users.Count();
         User u = new User();
         u.Name = user.Name;
@@ -25,7 +25,7 @@ public class UserRepository : IUserRepository
     public Response Delete(int userId, bool force = false)
     {
         IEnumerable<User> search = from u in context.Users where u.Id == userId select u;
-        if (!search.Any()) return Response.NotFound;
+        if (!search.Any() || search is null) return Response.NotFound;
         User user = search.First();
         if (!user.Tasks.Any() || force)
         {

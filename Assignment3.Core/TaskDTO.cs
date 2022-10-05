@@ -1,6 +1,6 @@
 namespace Assignment3.Core;
 
-public record TaskDTO(int Id, string Title, string AssignedToName, IReadOnlyCollection<string> Tags, State State);
+public record TaskDTO(int Id, string Title, string? AssignedToName, IReadOnlyCollection<string> Tags, State State);
 
 public record TaskDetailsDTO(int Id, string Title, string Description, DateTime Created, string AssignedToName,
     IReadOnlyCollection<string> Tags, State State, DateTime StateUpdated);
